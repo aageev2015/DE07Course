@@ -118,7 +118,7 @@ def controller_load_sales_raw() -> flask_typing.ResponseReturnValue:
                 "message": f'"raw_dir" parameter missed',
             }, HTTPStatus.BAD_REQUEST
 
-        sales_bll.save_sales_to_local_disk(log, date_str=date_str, raw_dir=raw_dir)
+        sales_bll.save_sales_to_storage(log, date_str=date_str, raw_dir=raw_dir)
         return {
             "message": "Data retrieved successfully from API",
         }, HTTPStatus.CREATED

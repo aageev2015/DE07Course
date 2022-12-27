@@ -7,13 +7,13 @@ class SalesDalInterface:
     def __init__(self):
         pass
 
-    def convert_raw_to_avro(self, log: LogItemInterface, raw_dir: str, stg_dir: str) -> List[Dict[str, Any]]:
+    def get_sales(self, log: LogItemInterface, date_str: str, page_num: int) -> List[Dict[str, Any]]:
         """
-        Get data from sales API for specified date.
+        Get data from sales API for specified date and page.
 
         :param log: log-item for handling logs
-        :param raw_dir: source folder with raw data
-        :param stg_dir: target folder with converted avro data
+        :param date_str: date filter
+        :param page_num: page number filter
         :return: list of records
         """
         pass

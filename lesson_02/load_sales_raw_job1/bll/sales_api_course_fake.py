@@ -28,16 +28,17 @@ class SalesApiBllCourseFake(SalesApiBlInterface):
         self.__request_max_fails_count = request_max_fails_count
         self.__file_name_template = file_name_template
 
-    def save_sales_to_local_disk(self, log: LogItemInterface, date_str: str, raw_dir: str) -> None:
+    def save_sales_to_storage(self, log: LogItemInterface, date_str: str, raw_dir: str) -> None:
         """
-        Fetch sales data from course API on date. Place it locally
+        Fetch sales data from vendor API on date. Save it to storage
 
         Input parameters:
-        {
-            "date: "2022-12-09",
-            "raw_dir": "/raw/sales/2022-12-09"
-        }
+            :param log: log-item for handling logs: "2022-12-09"
+            :param date_str: date formatted in acceptable by vendor API format: "/raw/sales/2022-12-09"
+            :param raw_dir: logical raw path
+            :return: list of records
         """
+
         log.dev_debug(f"Start job1 on {date_str} to {raw_dir}")
         if not self.__date_validator.validate(date_str):
             raise SalesBllDateFormatException(

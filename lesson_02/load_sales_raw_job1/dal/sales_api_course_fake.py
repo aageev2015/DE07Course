@@ -15,6 +15,14 @@ class SalesDalCourseFake(SalesDalInterface):
         self.__token = token
 
     def get_sales(self, log: LogItemInterface, date_str: str, page_num: int) -> List[Dict[str, Any]]:
+        """
+        Get data from sales WebAPI for specified date and page.
+
+        :param log: log-item for handling logs
+        :param date_str: date filter
+        :param page_num: page number filter
+        :return: list of records
+        """
         log.dev_debug(f"Request to CourseFake API on date {date_str}, page {page_num}")
 
         response = requests.get(

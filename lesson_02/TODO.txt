@@ -43,3 +43,6 @@
     find way to read log config without creating loggers (before creating loggers)
     fetch all log folders from config and guarantee they exists
 - try use logger embedded into Flask.
+- finish implementation for RelativeRawFilePathValidator
+- try replace path validators with RegEx. not forget about os.sep usage
+- respond 418 I'm a teapot when client sends json with not declared parameters
