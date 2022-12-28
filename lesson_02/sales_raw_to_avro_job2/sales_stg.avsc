@@ -1,0 +1,10 @@
+{"namespace": "course_fake_sales.avro",
+ "type": "record",
+ "name": "Sale",
+ "fields": [
+     {"name": "client", "type": "string"},
+     {"name": "purchase_date",  "type": ["null", {"type": "int", "logicalType": "date"}]},
+     {"name": "product", "type": "string"},
+     {"name": "price", "type": "int"}
+ ]
+}

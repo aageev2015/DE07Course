@@ -5,6 +5,9 @@ from support_tools.req_id_generator import ReqIdGeneratorInterface
 
 
 class LogItemFactory:
+    """
+    Instance container for log id
+    """
     def __init__(self, log_container: LoggersContainer, req_id_generator: ReqIdGeneratorInterface):
         self.__log_container = log_container
         self.__req_id_generator = req_id_generator

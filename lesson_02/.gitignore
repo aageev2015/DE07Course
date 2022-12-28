@@ -3,7 +3,8 @@ logs/
 file_storage/
 tests/logs/
 tests/file_storage/
-load_sales_raw_job1/debug/debug_course_fake_api_request.http
+tests/tmp
+load_sales_raw_job1/request_examples/debug_course_fake_api_request.http
 
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -142,7 +143,7 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Cython debug symbols
+# Cython request_examples symbols
 cython_debug/
 
 # local

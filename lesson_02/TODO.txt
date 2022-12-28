@@ -1,48 +1,69 @@
 [load_sales_raw_job1]
-- remove dispatch usage in support_tools.log_formatter
+- highest problem: on POSTs delete all existing files first and only after this insert all new files
+    without it possible partially rewrite not all of pages.
+    than we face with situation where part pages will be updated and another part left old
+- minor: remove dispatch usage in support_tools.log_formatter
     motivation: PyCharm can't navigate to @dispatched methods or require to configure additionally
-- add logging full-stack for unexpected errors
-- add request content log as DEBUG for any errors
-- use DI approach provided by Flask
+- high: add logging full-stack for unexpected errors
+    generally require review have in debug log full-stacks of each exception on the end
+- problem, duplicate: traceback log can be loosed on unexpected exception.
+    check it.
+- high: add request content log as DEBUG for any errors
+- high: CourseFake api log request-responses. decide when do it
+- middle: use DI approach provided by Flask
     https://python-dependency-injector.ets-labs.org/tutorials/flask.html
     motivation: just to know
-- place all instances into DI container
-- all controller methods into separate class
-- idea: LogFormatter use from object instance, not static methods
-- move all main.py configs into separate .py file or .json
-- problem: character " and ' usage for strings mixed up.
+- middle: place all instances into DI container
+- minor: all controller methods into separate class
+- minor, idea: LogFormatter use from object instance, not static methods
+- minor: move all main.py configs into separate .py file or .json
+- minor problem: character " and ' usage for strings mixed up.
     Select and use one format everywhere or make some rules for it
-- idea: move string message to separate resource file.
+- minor idea: move string message to separate resource file.
     find resource manager for string
-- idea: add languages support based on resource files
-- use not private but protected properties. change __ props to _. Read additionally
-- CourseFake api log request-responses. decide when do it
-- problem: looks like logs overengeneered. not simple:(
-- problem: looks like exception handling overengeneered
-- problem: traceback log can be loosed on unexpected exception.
-    check it.
-- problem: passing LogItemInterface into each layer is bad decision.
+- tiny idea: add languages support based on resource files
+- middle: use not private but protected properties. change __ props to _. Read additionally
+- minor problem: looks like logs overengeneered. not simple:(
+- minor problem: looks like exception handling overengeneered
+- high problem: passing LogItemInterface into each layer is bad decision.
     Make bl+da instances on each request?
-- problem: handling expected situations with raise and try..except may have performance impact
-- protection from spamming sales api by ours requests.
+- middle problem: handling expected situations with raise and try..except may have performance impact
+    think about return codes and return structures
+- minor feature: protection from spamming sales api by ours requests.
     In case of request to this api from different sources
     Take into account about existing sleep
-- feature: retry send same request to sales API on fail
-- implement prep for exceptions
+- minor feature: retry send same request to sales API on fail
+- minor refactor: implement prep for exceptions
     one place noticed: required during debugging in for watch
-- handle SalesAPI response code TOO_MANY_REQUESTS separately
-- idea: job1 - make queue of all requests.
+- high: handle SalesAPI response code TOO_MANY_REQUESTS separately
+- tiny feature: job1 - make queue of all requests.
     job11 - call periodically. take message from top and process with longer delays between page load
     same with job2 - job21. job2 must response with info about job11 status
     motivation: when job1 receive request. user not needed to wait response while all hard work done
-- make additional page (swagger like) to test web-api directly form bowser
+- minor feature: make additional page (swagger like) to test web-api directly form bowser
     - add link on it to index.html
-- investigate scope for environment variables names.
+- minor refactor: investigate scope for environment variables names.
     Is it global names? Need add this WebAPI prefix than
-- remove hardcoded in main.py log path for exists guarantee
+- middle: remove hardcoded in main.py log path for exists guarantee
     find way to read log config without creating loggers (before creating loggers)
     fetch all log folders from config and guarantee they exists
-- try use logger embedded into Flask.
-- finish implementation for RelativeRawFilePathValidator
-- try replace path validators with RegEx. not forget about os.sep usage
-- respond 418 I'm a teapot when client sends json with not declared parameters
+- middle: try use logger embedded into Flask.
+- middle refactor: WebAPI code for job1 and job2 contains common logic. also methods are too huge
+- minor: unit tests for logs staff
+- minor: tests for another not controllable possible failings (bll, dal)
+- minor refactor: recheck 'dir'\'folder' names. I'm mixing usage of these names. Use one of it
+- review docstrings
+- minor: make index.html beautiful with bootstrap framework
+
+
+[sales_raw_to_avro_job2]
+- same job1. everything overlapped
+- highest question:
+    StorageDalDisk.save_avro logically do transformation with validation.
+    But according to bll description transformation must be in bll
+    Same about json->avro requirements and another data validations. Where this must be?
+- high question: i'm implement own logic to write raw record to avro
+    thats was made only because need format date field format correctly
+    but looks like that's must be enough to configure scheme corrctly (not found how)
+- high feature: return to client more detailed info about foromat errors during raw->avro conversions
+

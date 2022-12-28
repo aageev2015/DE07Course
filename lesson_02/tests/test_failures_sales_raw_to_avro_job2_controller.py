@@ -1,5 +1,5 @@
 """
-Integration tests for load_sales_raw_job1 WebAPI controller modes based on settings
+Integration tests for sales_raw_to_avro_job2 WebAPI controller failures
 """
 
 from unittest import TestCase
@@ -7,7 +7,7 @@ from unittest import TestCase
 from load_sales_raw_job1 import main
 
 
-class WebAPIControllerWorkingModesTest(TestCase):
+class WebAPIControllerFailuresTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         main.app.testing = True

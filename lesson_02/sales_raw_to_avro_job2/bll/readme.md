@@ -1,7 +1,7 @@
 # Business Logic Layer
 
 Contains code for data manipulation, transformation and any type
-of business logic for load sales raw job1.
+of business logic of sales raw to avro job2.
 
 Please, read for more details:
 - https://learn.microsoft.com/en-us/aspnet/web-forms/overview/data-access/introduction/creating-a-business-logic-layer-cs

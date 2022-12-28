@@ -5,12 +5,24 @@ from support_tools.file_tools import has_path_sub_folder
 
 
 class StringValidatorInterface:
-    def validate(self, value_str: str):
-        pass
-
     @property
     def format(self) -> str:
         pass
+
+    def validate(self, value_str: str) -> bool:
+        pass
+
+
+class StringReturnsTrueValidator(StringValidatorInterface):
+    """
+    Can be used to disable validators in place where validator expected
+    """
+    @property
+    def format(self) -> str:
+        return ''
+
+    def validate(self, value_str: str) -> bool:
+        return True
 
 
 class BasicDateValidator(StringValidatorInterface):
@@ -42,6 +54,8 @@ class RelativeFilePathValidator(StringValidatorInterface):
             return False
         absolute_removed = value_str[1:] if value_str[0] in ["/", "\\"] else value_str
         normalized = os.path.normcase(absolute_removed)
+        if normalized in ['', 'c:']:
+            return False
         is_not_abs = not os.path.isabs(normalized)
         folders = normalized.split(os.sep)
         has_no_parents = ".." not in folders

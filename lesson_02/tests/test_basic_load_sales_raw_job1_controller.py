@@ -50,18 +50,19 @@ class WebAPIControllerTest(TestCase):
             '/',
             json={
                 "date": "2022-08-09",
-                "raw_dir": "/raw/sales/"
+                "raw_dir": "/raw/sales/2022-08-09"
             },
         )
 
         self.assertEqual(201, resp.status_code)
 
-        file1 = os.path.join(main.RAW_LOADED_PATH, os.path.normpath('raw/sales/sales_2022-08-09_1.json'))
-        file2 = os.path.join(main.RAW_LOADED_PATH, os.path.normpath('raw/sales/sales_2022-08-09_2.json'))
-        file3 = os.path.join(main.RAW_LOADED_PATH, os.path.normpath('raw/sales/sales_2022-08-09_3.json'))
+        file1 = os.path.join(main.RAW_LOADED_PATH, os.path.normpath('raw/sales/2022-08-09/sales_2022-08-09_1.json'))
+        file2 = os.path.join(main.RAW_LOADED_PATH, os.path.normpath('raw/sales/2022-08-09/sales_2022-08-09_2.json'))
+        file3 = os.path.join(main.RAW_LOADED_PATH, os.path.normpath('raw/sales/2022-08-09/sales_2022-08-09_3.json'))
         self.assertTrue(os.path.isfile(file1))
         self.assertTrue(os.path.isfile(file2))
         self.assertFalse(os.path.isfile(file3))
+
         os.remove(file1)
         os.remove(file2)
 
@@ -77,7 +78,7 @@ class WebAPIControllerTest(TestCase):
             '/',
             json={
                 "date": "2022-08-09",
-                "raw_dir": "/raw/sales/"
+                "raw_dir": "/raw/sales/2022-08-09"
             },
         )
 
@@ -94,17 +95,29 @@ class WebAPIControllerTest(TestCase):
             '/',
             json={
                 "date": "2022-08-09",
-                "raw_dir": "/raw/sales/"
+                "raw_dir": "/raw/sales/2022-08-09"
             },
         )
 
         self.assertEqual(404, resp.status_code)
 
+    def test_controller_load_sales_raw___when_not_supported_parameters_than_IM_A_TEAPOT(self):
+        resp = self.client.post(
+            '/',
+            json={
+                "date": "2022-08-09",
+                "raw_dir": "/raw/sales/2022-08-09",
+                "cheat_code": "god_mode"
+            },
+        )
+
+        self.assertEqual(418, resp.status_code)
+
     def test_controller_load_sales_raw___when_date_missed_than_BAD_REQUEST(self):
         resp = self.client.post(
             '/',
             json={
-                "raw_dir": "/raw/sales/",
+                "raw_dir": "/raw/sales/2022-08-09",
             },
         )
 
@@ -123,11 +136,11 @@ class WebAPIControllerTest(TestCase):
     def test_controller_load_sales_raw___when_raw_dir_wrong_format_than_BAD_REQUEST(self):
         for wrong_path in [
             # contains parents
-            "..", "/..", "../", "/../",
-            "raw/..", "raw/../", "/raw/..",
-            "raw/../sales", "raw/../sales/", "/raw/../sales",
+            "..", "raw/..", "raw/../sales", "raw/sales/../../..", "raw/sales/.."
             # is absolute
-            "//sales/raw", "c:/sales/raw"
+            "//raw/sales", "c:/raw/sales"
+            # not starts with raw
+            "", "/rew/sales/2022-08-09"
         ]:
             resp = self.client.post(
                 '/',

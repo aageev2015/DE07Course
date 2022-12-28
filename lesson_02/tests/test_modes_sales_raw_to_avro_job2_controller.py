@@ -1,5 +1,5 @@
 """
-Integration tests for load_sales_raw_job1 WebAPI controller modes based on settings
+Integration tests for sales_raw_to_avro_job2 WebAPI controller modes based on settings
 """
 
 from unittest import TestCase
