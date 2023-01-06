@@ -12,3 +12,7 @@ class SalesDalAPIRequestFailedException(Exception):
 
 class SalesDalStorageSaveException(Exception):
     pass
+
+
+class SalesDalStorageRemoveException(Exception):
+    pass

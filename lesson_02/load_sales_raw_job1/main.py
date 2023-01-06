@@ -29,7 +29,7 @@ LOGS_PATH = os.environ.get("LOGS_PATH") or os.path.join(WORKING_DIR, 'logs')
 LOAD_RAW_JOB_PORT = os.environ.get("LOAD_RAW_JOB_PORT") or 8081
 RAW_LOADED_PATH = os.environ.get("RAW_LOADED_PATH") or os.path.join(WORKING_DIR, 'file_storage')
 RAW_SALES_API_URL = os.environ.get("RAW_SALES_API_URL") or 'https://fake-api-vycpfa6oca-uc.a.run.app/sales'
-RAW_LOAD_CONTINUE_ON_PAGE_FAIL = (os.environ.get("RAW_LOAD_CONTINUE_ON_PAGE_FAIL") == 1) or True
+RAW_LOAD_CONTINUE_ON_PAGE_FAIL = (os.environ.get("RAW_LOAD_CONTINUE_ON_PAGE_FAIL") == 1) or False
 RAW_SALES_API_REQUESTS_DELAY_SEC = 0.2
 RAW_SALES_API_MAX_FAILS = 3
 RAW_FILE_NAME_TEMPLATE = "sales_%date%_%page%.json"
@@ -159,12 +159,22 @@ def controller_load_sales_raw() -> flask_typing.ResponseReturnValue:
         return {
             "message": "Internal API error",
         }, HTTPStatus.INTERNAL_SERVER_ERROR
+    except SalesDalAPIRequestFailedTemporaryException as e:
+        log.dev_error(e, "Vendor's sales API not temporary not accessible")
+        return {
+            "message": "Internal API error",
+        }, HTTPStatus.INTERNAL_SERVER_ERROR
     except SalesDalAPIRequestFailedException as e:
         log.dev_error(e, "Vendor's sales API request failed")
         return {
             "message": "Internal API error",
         }, HTTPStatus.INTERNAL_SERVER_ERROR
     except SalesDalStorageSaveException as e:
+        log.dev_error(e, "Saving to local disk failed")
+        return {
+            "message": "Internal API error",
+        }, HTTPStatus.INTERNAL_SERVER_ERROR
+    except SalesBllRollbackException as e:
         log.dev_error(e, "Saving to local disk failed")
         return {
             "message": "Internal API error",

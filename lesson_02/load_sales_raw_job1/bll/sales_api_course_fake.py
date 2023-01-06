@@ -65,15 +65,17 @@ class SalesApiBllCourseFake(SalesApiBlInterface):
                     break
 
                 log.dev_debug(f"BLL. Saving page {page_num}")
-                file_name = self.__file_name_template \
-                    .replace("%date%", date_str) \
-                    .replace("%page%", str(page_num))
+                file_name = self.__format_file_name(date_str, str(page_num))
                 self.__storage_api_dal.save(log, sales_list, raw_dir, file_name)
 
                 total_records_count = total_records_count + records_count
             except BaseException as e:
                 page_fail_count = page_fail_count + 1
-                self.__handle_exception_per_page(e, log)
+                if self.__continue_on_page_load_fail:
+                    self.__handle_exception_continuation(e, log)
+                else:
+                    self.__roll_back(log, date_str, raw_dir)
+                    self.__handle_exception(e, log)
 
             if page_fail_count > self.__request_max_fails_count:
                 break
@@ -91,18 +93,45 @@ class SalesApiBllCourseFake(SalesApiBlInterface):
         elif total_records_count == 0:
             raise SalesBllNothingLoadedException()
 
-    def __handle_exception_per_page(self, e: BaseException, log: LogItemInterface) -> None:
-        if not self.__continue_on_page_load_fail:
-            raise e
-
+    # noinspection PyMethodMayBeStatic
+    def __handle_exception_continuation(self, e: BaseException, log: LogItemInterface) -> None:
         match e:
             case SalesDalAPIJSONFormatException():
                 log.dev_error(e, "Vendor's sales API return wrong JSON format")
             case SalesDalAPIRequestFailedTemporaryException():
-                log.dev_error(e, "Vendor's sales API request failed")
+                log.dev_error(e, "Vendor's sales API request possibly temporary failed")
             case SalesDalAPIRequestFailedException():
                 raise e
             case SalesDalStorageSaveException():
                 raise e
             case _:
                 raise e
+
+    # noinspection PyMethodMayBeStatic
+    def __handle_exception(self, e: BaseException, log: LogItemInterface) -> None:
+        match e:
+            case SalesDalAPIJSONFormatException():
+                raise e
+            case SalesDalAPIRequestFailedTemporaryException():
+                raise e
+            case SalesDalAPIRequestFailedException():
+                raise e
+            case SalesDalStorageSaveException():
+                raise e
+            case _:
+                raise e
+
+
+    def __format_file_name(self, date_str: str, page_num_str: str) -> str:
+        return self.__file_name_template \
+            .replace("%date%", date_str) \
+            .replace("%page%", page_num_str)
+
+    def __roll_back(self, log: LogItemInterface, date_str: str, raw_dir: str) -> None:
+        file_mask_to_remove = self.__format_file_name(date_str, '*')
+        try:
+            self.__storage_api_dal.remove_all(log, raw_dir, file_mask_to_remove)
+        except SalesDalStorageRemoveException as e_rollback:
+            log.dev_error(e_rollback, f"Remove files on rollback failed on {date_str}\nfor {raw_dir}")
+            raise SalesBllRollbackException(f"Remove files on rollback failed on {date_str}\nfor {raw_dir}")
+

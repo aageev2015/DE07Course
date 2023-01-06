@@ -17,3 +17,6 @@ class SalesBllAllTriesFailedException(Exception):
 class SalesBllNothingLoadedException(Exception):
     pass
 
+
+class SalesBllRollbackException(Exception):
+    pass

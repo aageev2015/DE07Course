@@ -1,8 +1,9 @@
 import json
+import glob
 import os
 from typing import List, Dict, Any
 
-from load_sales_raw_job1.dal.exceptions import SalesDalStorageSaveException
+from load_sales_raw_job1.dal.exceptions import SalesDalStorageSaveException, SalesDalStorageRemoveException
 from load_sales_raw_job1.dal.storage_api import StorageDalInterface
 from logs_handling.log_item import LogItemInterface
 from support_tools.file_tools import guarantee_folder_exists, logical_to_physical_file_path
@@ -27,3 +28,19 @@ class StorageDalDisk(StorageDalInterface):
         except BaseException as e:
             raise SalesDalStorageSaveException(
                 LogFormatter.format_except(e, f"Saving to file failed. {full_file_path}"))
+
+    def remove_all(self, log: LogItemInterface, logical_path: str, file_name_mask: str) -> None:
+        full_file_mask_path = logical_to_physical_file_path(self.__root_path, logical_path, file_name_mask)
+
+        last_file_name = ""
+        try:
+            for full_file_name in glob.iglob(full_file_mask_path):
+                last_file_name = full_file_name
+                if os.path.isfile(full_file_name):
+                    os.remove(full_file_name)
+        except BaseException as e:
+            raise SalesDalStorageRemoveException(
+                LogFormatter.format_except(e, f"Removing files failed: {file_name_mask}.\n"
+                                              f"Last File: {last_file_name}"))
+
+

@@ -18,3 +18,13 @@ class StorageDalInterface:
         :param file_name: file name
         """
         pass
+
+    def remove_all(self, log: LogItemInterface, logical_path: str, file_name_mask: str) -> None:
+        """
+        Remove objects from storage
+
+        :param log: Log-item
+        :param logical_path: logical path
+        :param file_name_mask: files names mask
+        """
+        pass
