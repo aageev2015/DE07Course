@@ -103,3 +103,8 @@ class StorageDalDisk(StorageDalInterface):
                 os.remove(full_file_path)
             raise SalesDalStorageSaveAvroException(
                 LogFormatter.format_except(e, f"Saving to avro file failed. {full_file_path}"))
+
+    def remove_avro(self, log: LogItemInterface, logical_path: str, file_name: str):
+        full_file_path = logical_to_physical_file_path(self.__root_stg_path, logical_path, file_name)
+        if os.path.isfile(full_file_path):
+            os.remove(full_file_path)

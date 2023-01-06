@@ -38,18 +38,29 @@ class WebAPIControllerTest(TestCase):
         self.__prepare_test_file(
             f'{self.TESTS_DIR}/data/sales_2022-08-09_2.json',
             f'{self.WORKING_DIR}/file_storage/raw/sales/2022-08-09/sales_2022-08-09_2.json')
+        self.__remove_test_file(f'{self.WORKING_DIR}/file_storage/raw/sales/2022-08-09/sales_2022-08-09_3.json')
 
     def __remove_raw_files(self):
         self.__remove_test_file(f'{self.WORKING_DIR}/file_storage/raw/sales/2022-08-09/sales_2022-08-09_1.json')
         self.__remove_test_file(f'{self.WORKING_DIR}/file_storage/raw/sales/2022-08-09/sales_2022-08-09_2.json')
 
     @staticmethod
+    def __stg_file_full_path(logical_path: str):
+        return os.path.join(main.STG_SAVED_PATH, os.path.normpath(logical_path))
+
+    @staticmethod
+    def __is_stg_file(logical_path: str):
+        file_path = WebAPIControllerTest.__stg_file_full_path(logical_path)
+        return os.path.isfile(file_path)
+
+    @staticmethod
     def __clear_folder_files_only(clearing_folder_path):
         for file_path in os.listdir(clearing_folder_path):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
+            full_file_path = clearing_folder_path + os.sep + file_path
+            if os.path.isfile(full_file_path):
+                os.remove(full_file_path)
 
-    def test_sales_raw_to_avro_job2___when_happy_path_than_OK(self):
+    def test_sales_raw_to_avro_job2___when_happy_path_than_CREATED(self):
         # test only that avro files creatable. Not check result content
         self.__prepare_raw_files()
 
@@ -63,13 +74,11 @@ class WebAPIControllerTest(TestCase):
 
         self.assertEqual(201, resp.status_code)
 
-        file1 = os.path.join(main.STG_SAVED_PATH, os.path.normpath('stg/sales/2022-08-09/sales_2022-08-09_1.avro'))
-        file2 = os.path.join(main.STG_SAVED_PATH, os.path.normpath('stg/sales/2022-08-09/sales_2022-08-09_2.avro'))
-        self.assertTrue(os.path.isfile(file1))
-        self.assertTrue(os.path.isfile(file2))
+        self.assertTrue(self.__is_stg_file('stg/sales/2022-08-09/sales_2022-08-09_1.avro'))
+        self.assertTrue(self.__is_stg_file('stg/sales/2022-08-09/sales_2022-08-09_2.avro'))
 
-        os.remove(file1)
-        os.remove(file2)
+        os.remove(self.__stg_file_full_path('stg/sales/2022-08-09/sales_2022-08-09_1.avro'))
+        os.remove(self.__stg_file_full_path('stg/sales/2022-08-09/sales_2022-08-09_2.avro'))
         self.__remove_raw_files()
 
     def test_controller_load_sales_raw___when_not_supported_parameters_than_IM_A_TEAPOT(self):
@@ -86,7 +95,7 @@ class WebAPIControllerTest(TestCase):
 
     def test_sales_raw_to_avro_job2___when_data_to_convert_not_found_than_NOT_FOUND(self):
         self.__clear_folder_files_only(
-            os.path.join(main.STG_SAVED_PATH, os.path.normpath('stg/sales/2022-08-09'))
+            os.path.join(main.RAW_PATH, os.path.normpath('raw/sales/2022-08-09'))
         )
 
         resp = self.client.post(
@@ -200,3 +209,25 @@ class WebAPIControllerTest(TestCase):
         self.assertFalse(os.path.isfile(file1))
 
         self.__remove_test_file(f'{self.WORKING_DIR}/file_storage/raw/sales/2022-08-09/sales_2022-08-09_1.json')
+
+    def test_sales_raw_to_avro_job2___when_UNPROCESSABLE_ENTITY_than_rollback_processed(self):
+        self.__prepare_raw_files()
+        self.__prepare_test_file(
+            f'{self.TESTS_DIR}/data/sales_2022-08-09_3_bad_avro.json',
+            f'{self.WORKING_DIR}/file_storage/raw/sales/2022-08-09/sales_2022-08-09_3.json')
+
+        resp = self.client.post(
+            '/',
+            json={
+                "stg_dir": "/stg/sales/2022-08-09",
+                "raw_dir": "/raw/sales/2022-08-09"
+            },
+        )
+
+        self.assertEqual(422, resp.status_code)
+
+        self.assertFalse(self.__is_stg_file('stg/sales/2022-08-09/sales_2022-08-09_1.avro'))
+        self.assertFalse(self.__is_stg_file('stg/sales/2022-08-09/sales_2022-08-09_2.avro'))
+        self.assertFalse(self.__is_stg_file('stg/sales/2022-08-09/sales_2022-08-09_3.avro'))
+
+        self.__remove_raw_files()

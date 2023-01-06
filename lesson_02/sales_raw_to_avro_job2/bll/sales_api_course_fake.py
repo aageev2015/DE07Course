@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from sales_raw_to_avro_job2.bll.exceptions import *
 from sales_raw_to_avro_job2.dal.exceptions import SalesDalAvroDateFormatException, SalesDalAvroKeyErrorException
@@ -52,16 +52,21 @@ class SalesApiBllCourseFake(SalesApiBlInterface):
         log.dev_debug(f"BLL. {len(raw_file_names)} files was found")
 
         files_processed_count = 0
-        for raw_file_name in raw_file_names:
-            stg_file_name = self.__raw_file_name_regex.sub(self.__stg_file_name_regex, raw_file_name)
-            if raw_file_name == stg_file_name:
-                log.dev_debug(f"BLL. raw file {stg_file_name} skipped by file name mismatch")
-                continue
-            raw_data = self.__storage_api_dal.load_raw(log, raw_dir, raw_file_name)
-            self.__storage_api_dal.save_avro(log, raw_data, stg_dir, stg_file_name, self.__raw_record_to_avro)
-            files_processed_count = files_processed_count + 1
-            log.dev_debug(f"BLL. {raw_file_name} converted to {stg_file_name}")
-
+        files_created = []
+        try:
+            for raw_file_name in raw_file_names:
+                stg_file_name = self.__raw_file_name_regex.sub(self.__stg_file_name_regex, raw_file_name)
+                if raw_file_name == stg_file_name:
+                    log.dev_debug(f"BLL. raw file {stg_file_name} skipped by file name mismatch")
+                    continue
+                raw_data = self.__storage_api_dal.load_raw(log, raw_dir, raw_file_name)
+                self.__storage_api_dal.save_avro(log, raw_data, stg_dir, stg_file_name, self.__raw_record_to_avro)
+                files_created.append(stg_file_name)
+                files_processed_count = files_processed_count + 1
+                log.dev_debug(f"BLL. {raw_file_name} converted to {stg_file_name}")
+        except BaseException as e:
+            self.__roll_back(log, stg_dir, files_created)
+            raise e
         log.dev_debug(f"BLL. Conversion finished. {files_processed_count} files processed")
 
         if files_processed_count == 0:
@@ -90,3 +95,7 @@ class SalesApiBllCourseFake(SalesApiBlInterface):
             "product": raw_record.get("product", ""),
             "price": raw_record.get("price", 0)
         }
+
+    def __roll_back(self, log: LogItemInterface, stg_dir: str, files_created: List[str]):
+        for file_name in files_created:
+            self.__storage_api_dal.remove_avro(log, stg_dir, file_name)

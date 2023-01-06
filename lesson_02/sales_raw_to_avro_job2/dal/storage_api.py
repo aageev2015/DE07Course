@@ -32,12 +32,22 @@ class StorageDalInterface:
                   logical_path: str, file_name: str,
                   record_raw_to_avro: Callable[[Dict[str, Any]], Dict[str, Any]]) -> None:
         """
-        Store list of objects to stg storage
+        Store list of objects to avro storage
 
         :param log: Log-item
         :param raw_list: list of items to save
-        :param logical_path: logical stg path
-        :param file_name: stg file name
+        :param logical_path: logical avro path
+        :param file_name: avro file name
         :param record_raw_to_avro: raw to avro conversion logic
+        """
+        pass
+
+    def remove_avro(self, log: LogItemInterface, logical_path: str, file_name: str):
+        """
+        Remove avro vile from storage
+
+        :param log: Log-item
+        :param logical_path: avro folder path
+        :param file_name: file name
         """
         pass

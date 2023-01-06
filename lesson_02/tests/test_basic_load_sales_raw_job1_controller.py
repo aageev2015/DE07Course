@@ -20,7 +20,7 @@ class WebAPIControllerTest(TestCase):
         main.sales_bll._SalesApiBllCourseFake__requests_delay_sec = 0
 
     @responses.activate
-    def test_controller_load_sales_raw___when_happy_path_than_OK(self):
+    def test_controller_load_sales_raw___when_happy_path_than_CREATED(self):
         responses.add(
             responses.GET,
             'http://sales-tests-api.com/sales?date=2022-08-09&page=1',
