@@ -1,0 +1,7 @@
+POST http://127.0.0.1:8082/
+Content-Type: application/json
+
+{
+  "stg_dir": "/stg/sales/2022-08-09",
+  "raw_dir": "/raw/sales/2022-08-09"
+}
