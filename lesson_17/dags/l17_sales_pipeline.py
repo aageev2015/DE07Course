@@ -34,7 +34,7 @@ task1_sales_data_lake_raw_to_bronze = BigQueryInsertJobOperator(
     project_id='de-07-ageiev-oleksii-l17',
     configuration={
         "query": {
-            "query": "{% include 'sql/transfer_data_lake_raw_to_bronze.sql' %}",
+            "query": "{% include 'sql/transfer_sales_data_lake_raw_to_bronze.sql' %}",
             "useLegacySql": False,
             "tableDefinitions": {
                 "sales_csv": sales_csv,
