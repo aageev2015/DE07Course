@@ -14,7 +14,7 @@ OPTIONS(
 )
 ;
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.customer`
+CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.customers`
 (
   Id STRING,
   FirstName STRING,
@@ -45,7 +45,7 @@ OPTIONS(
 )
 ;
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customer`
+CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
 (
   id INT64,
   first_name STRING,
