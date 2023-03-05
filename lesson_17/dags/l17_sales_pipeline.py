@@ -48,8 +48,8 @@ task1_sales_data_lake_raw_to_bronze = BigQueryInsertJobOperator(
     }
 )
 
-task1_sales_bronze_to_silver = BigQueryInsertJobOperator(
-    task_id='task1_sales_bronze_to_silver',
+task2_sales_bronze_to_silver = BigQueryInsertJobOperator(
+    task_id='task2_sales_bronze_to_silver',
     dag=dag,
     location='us-east1',
     project_id='de-07-ageiev-oleksii-l17',
@@ -69,5 +69,5 @@ task1_sales_bronze_to_silver = BigQueryInsertJobOperator(
 )
 
 
-task1_sales_data_lake_raw_to_bronze >> task1_sales_bronze_to_silver
+task1_sales_data_lake_raw_to_bronze >> task2_sales_bronze_to_silver
 
