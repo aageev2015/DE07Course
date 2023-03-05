@@ -31,10 +31,11 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.customers`
 
 CREATE TABLE `de-07-ageiev-oleksii-l17.silver.sales`
 (
-  customer_id INT64,
+  client_id INT64,
   purchase_date DATE,
   product STRING,
-  price STRING,
+  price NUMERIC,
+  currency STRING(5),
   _id STRING(36) NOT NULL,
   _logical_dt DATE NOT NULL,
   _job_start_dt TIMESTAMP NOT NULL

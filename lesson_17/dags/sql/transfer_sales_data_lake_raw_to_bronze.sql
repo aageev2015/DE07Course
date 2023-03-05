@@ -1,5 +1,5 @@
 DELETE FROM `{{ params.project_id }}.bronze.sales`
-WHERE DATE(_logical_dt) = "{{ ds }}"
+WHERE DATE(_logical_dt) = '{{ ds }}'
 ;
 
 INSERT `{{ params.project_id }}.bronze.sales` (

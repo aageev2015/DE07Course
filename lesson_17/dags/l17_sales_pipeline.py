@@ -20,7 +20,8 @@ dag = DAG(
     dag_id='l17_sales_pipeline',
     description="Lesson 17 sales pipeline",
     start_date=datetime(2022, 9, 1),
-    end_date=datetime(2022, 10, 2),
+    #end_date=datetime(2022, 10, 2),
+    end_date=datetime(2022, 9, 5),
     schedule_interval="0 1 * * *",
     catchup=True,
     tags=['sales'],
@@ -47,6 +48,26 @@ task1_sales_data_lake_raw_to_bronze = BigQueryInsertJobOperator(
     }
 )
 
+task1_sales_bronze_to_silver = BigQueryInsertJobOperator(
+    task_id='task1_sales_bronze_to_silver',
+    dag=dag,
+    location='us-east1',
+    project_id='de-07-ageiev-oleksii-l17',
+    configuration={
+        "query": {
+            "query": "{% include 'sql/transfer_sales_bronze_to_silver.sql' %}",
+            "useLegacySql": False,
+            "tableDefinitions": {
+                "sales_csv": sales_csv,
+            },
+        }
+    },
+    params={
+        'data_lake_raw_bucket': "de-07-bucket-aoleksii-l17",
+        'project_id': "de-07-ageiev-oleksii-l17"
+    }
+)
 
-task1_sales_data_lake_raw_to_bronze
+
+task1_sales_data_lake_raw_to_bronze >> task1_sales_bronze_to_silver
 
