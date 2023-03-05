@@ -6,7 +6,8 @@ from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobO
 from table_defs.customers_csv import customers_csv
 
 DEFAULT_ARGS = {
-    'depends_on_past': False,
+    'depends_on_past': True,
+    'wait_for_downstream': True,
     'email': ['admin@example.com'],
     'email_on_failure': True,
     'email_on_retry': False,
@@ -19,7 +20,7 @@ DEFAULT_ARGS = {
 dag = DAG(
     dag_id='l17_customers_pipeline',
     description="Lesson 17 customers pipeline",
-    start_date=datetime(2022, 8, 5),
+    start_date=datetime(2022, 8, 1),
     end_date=datetime(2022, 8, 6),
     schedule_interval="0 1 * * *",
     catchup=True,
