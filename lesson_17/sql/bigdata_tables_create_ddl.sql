@@ -48,7 +48,7 @@ OPTIONS(
 
 CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
 (
-  id INT64,
+  client_id INT64,
   first_name STRING,
   last_name STRING,
   email STRING,

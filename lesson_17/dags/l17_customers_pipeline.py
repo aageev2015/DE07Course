@@ -47,6 +47,22 @@ task1_customers_data_lake_raw_to_bronze = BigQueryInsertJobOperator(
     }
 )
 
+task1_customers_bronze_to_silver = BigQueryInsertJobOperator(
+    task_id='task1_customers_bronze_to_silver',
+    dag=dag,
+    location='us-east1',
+    project_id='de-07-ageiev-oleksii-l17',
+    configuration={
+        "query": {
+            "query": "{% include 'sql/transfer_customers_bronze_to_silver.sql' %}",
+            "useLegacySql": False,
+        }
+    },
+    params={
+        'project_id': "de-07-ageiev-oleksii-l17"
+    }
+)
 
-task1_customers_data_lake_raw_to_bronze
+
+task1_customers_data_lake_raw_to_bronze >> task1_customers_bronze_to_silver
 
