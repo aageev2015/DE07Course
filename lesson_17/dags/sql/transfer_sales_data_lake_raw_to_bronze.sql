@@ -3,7 +3,7 @@ DECLARE v_dag_start_date DEFAULT CAST('{{ dag_run.start_date }}' AS TIMESTAMP);
 DECLARE v_dag_ds DEFAULT CAST(CAST('{{ ds }}' AS TIMESTAMP) AS DATE);
 
 DELETE FROM `{{ params.project_id }}.bronze.sales`
-WHERE DATE(_logical_dt) = v_dag_ds
+WHERE _logical_dt = v_dag_ds
 ;
 
 INSERT `{{ params.project_id }}.bronze.sales` (

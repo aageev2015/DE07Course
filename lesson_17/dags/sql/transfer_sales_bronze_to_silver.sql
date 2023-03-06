@@ -3,7 +3,7 @@ DECLARE v_dag_start_date DEFAULT CAST('{{ dag_run.start_date }}' AS TIMESTAMP);
 DECLARE v_dag_ds DEFAULT CAST(CAST('{{ ds }}' AS TIMESTAMP) AS DATE);
 
 DELETE FROM `{{ params.project_id }}.silver.sales`
-WHERE DATE(purchase_date) = v_dag_ds
+WHERE purchase_date = v_dag_ds
 ;
 
 INSERT `{{ params.project_id }}.silver.sales` (
@@ -19,11 +19,15 @@ INSERT `{{ params.project_id }}.silver.sales` (
 )
 SELECT
     CAST(CustomerId AS INT64)       AS client_id,
-    CAST(REPLACE(REPLACE(
-            TRIM(PurchaseDate)
-        , '/', '-')
-        , '\\', '-')
-        AS DATE)                    AS purchase_date,
+    CASE
+        WHEN REGEXP_CONTAINS(PurchaseDate, r'^\d{4}-[A-Za-z]{3}-\d{2}$')
+            THEN PARSE_DATE('%Y-%b-%e', PurchaseDate)
+        ELSE    CAST(REPLACE(REPLACE(
+                    TRIM(PurchaseDate)
+                    , '/', '-')
+                    , '\\', '-')
+                AS DATE)
+    END                             AS purchase_date,
     TRIM(Product)                   AS product,
     CAST(RTRIM(RTRIM(
         TRIM(Price),
@@ -39,5 +43,5 @@ SELECT
     _logical_dt,
     _job_start_dt
 FROM `{{ params.project_id }}.bronze.sales`
-WHERE DATE(_logical_dt) = v_dag_ds
+WHERE _logical_dt = v_dag_ds
 ;
