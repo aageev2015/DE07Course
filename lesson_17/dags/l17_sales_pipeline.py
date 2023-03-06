@@ -57,9 +57,6 @@ task2_sales_bronze_to_silver = BigQueryInsertJobOperator(
         "query": {
             "query": "{% include 'sql/transfer_sales_bronze_to_silver.sql' %}",
             "useLegacySql": False,
-            "tableDefinitions": {
-                "sales_csv": sales_csv,
-            },
         }
     },
     params={
