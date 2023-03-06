@@ -4,6 +4,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.sales`
   PurchaseDate STRING,
   Product STRING,
   Price STRING,
+  
   _id STRING(36) NOT NULL,
   _logical_dt DATE NOT NULL,
   _job_start_dt TIMESTAMP NOT NULL
@@ -22,6 +23,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.customers`
   Email STRING,
   RegistrationDate STRING,
   State STRING,
+  
   _id STRING(36) NOT NULL,
   _logical_dt DATE NOT NULL,
   _job_start_dt TIMESTAMP NOT NULL
@@ -36,6 +38,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.silver.sales`
   product STRING,
   price NUMERIC,
   currency STRING(5),
+  
   _id STRING(36) NOT NULL,
   _logical_dt DATE NOT NULL,
   _job_start_dt TIMESTAMP NOT NULL
@@ -54,6 +57,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
   email STRING,
   registration_date DATE,
   state STRING,
+  
   _id STRING(36) NOT NULL,
   _logical_dt DATE NOT NULL,
   _job_start_dt TIMESTAMP NOT NULL
@@ -61,3 +65,49 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
 ;
 
 
+CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.user_profiles`
+(
+  email STRING,
+  full_name STRING,
+  state STRING,
+  birth_date STRING,
+  phone_number STRING,
+
+  _id STRING(36) NOT NULL,
+  _logical_dt DATE NOT NULL,
+  _job_start_dt TIMESTAMP NOT NULL
+)
+;
+
+CREATE TABLE `de-07-ageiev-oleksii-l17.silver.user_profiles`
+(
+  email STRING,
+  full_name STRING,
+  state STRING,
+  birth_date DATE,
+  phone_number STRING,
+  
+  full_name_parts ARRAY<STRING>,
+  
+  _id STRING(36) NOT NULL,
+  _logical_dt DATE NOT NULL,
+  _job_start_dt TIMESTAMP NOT NULL
+)
+;
+
+CREATE TABLE `de-07-ageiev-oleksii-l17.gold.user_profiles_enriched`
+(
+  client_id INT64,
+  first_name STRING,
+  last_name STRING,
+  email STRING,
+  registration_date DATE,
+  state STRING,
+  birth_date DATE,
+  phone_number STRING,
+  
+  _id STRING(36) NOT NULL,
+  _logical_dt DATE NOT NULL,
+  _job_start_dt TIMESTAMP NOT NULL
+)
+;
