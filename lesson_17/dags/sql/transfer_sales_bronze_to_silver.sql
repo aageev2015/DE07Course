@@ -19,8 +19,12 @@ INSERT `{{ params.project_id }}.silver.sales` (
 )
 SELECT
     CAST(CustomerId AS INT64)       AS client_id,
-    CAST(TRIM(PurchaseDate) AS DATE)      AS purchase_date,
-    TRIM(Product)                         AS product,
+    CAST(REPLACE(REPLACE(
+            TRIM(PurchaseDate)
+        , '/', '-')
+        , '\\', '-')
+        AS DATE)                    AS purchase_date,
+    TRIM(Product)                   AS product,
     CAST(RTRIM(RTRIM(
         TRIM(Price),
         'USD'), '$')
