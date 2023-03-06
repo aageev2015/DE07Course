@@ -13,6 +13,7 @@ INSERT INTO `{{ params.project_id }}.gold.user_profiles_enriched` (
     registration_date,
     state,
     birth_date,
+    age,
     phone_number,
 
     _id,
@@ -31,6 +32,9 @@ SELECT
     customers.registration_date,
     IFNULL(NULLIF(user_profiles.state, ''), customers.state)    as state,
     user_profiles.birth_date                                    as birth_date,
+    gold.age_calculation(
+        v_dag_logical_date,
+        user_profiles.birth_date)                               as age,
     user_profiles.phone_number                                  as phone_number,
 
     customers._id,

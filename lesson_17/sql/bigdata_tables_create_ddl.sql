@@ -1,4 +1,6 @@
-CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.sales`
+Accidental run-all protection
+
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.bronze.sales`
 (
   CustomerId STRING,
   PurchaseDate STRING,
@@ -15,7 +17,7 @@ OPTIONS(
 )
 ;
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.customers`
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.bronze.customers`
 (
   Id STRING,
   FirstName STRING,
@@ -31,7 +33,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.customers`
 ;
 
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.silver.sales`
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.silver.sales`
 (
   client_id INT64,
   purchase_date DATE,
@@ -49,7 +51,7 @@ OPTIONS(
 )
 ;
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
 (
   client_id INT64,
   first_name STRING,
@@ -65,7 +67,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.silver.customers`
 ;
 
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.user_profiles`
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.bronze.user_profiles`
 (
   email STRING,
   full_name STRING,
@@ -79,7 +81,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.bronze.user_profiles`
 )
 ;
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.silver.user_profiles`
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.silver.user_profiles`
 (
   email STRING,
   full_name STRING,
@@ -95,7 +97,7 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.silver.user_profiles`
 )
 ;
 
-CREATE TABLE `de-07-ageiev-oleksii-l17.gold.user_profiles_enriched`
+CREATE OR REPLACE TABLE `de-07-ageiev-oleksii-l17.gold.user_profiles_enriched`
 (
   client_id INT64,
   first_name STRING,
@@ -104,10 +106,22 @@ CREATE TABLE `de-07-ageiev-oleksii-l17.gold.user_profiles_enriched`
   registration_date DATE,
   state STRING,
   birth_date DATE,
+  age int,
   phone_number STRING,
   
   _id STRING(36) NOT NULL,
   _logical_dt DATE NOT NULL,
   _job_start_dt TIMESTAMP NOT NULL
+)
+;
+
+CREATE OR REPLACE FUNCTION `de-07-ageiev-oleksii-l17.gold.age_calculation`(
+	as_of_date DATE, 
+	date_of_birth DATE
+) AS (
+	  DATE_DIFF(as_of_date, date_of_birth, YEAR)
+  -	IF(   EXTRACT(MONTH FROM date_of_birth)*100 + EXTRACT(DAY FROM date_of_birth)
+        > EXTRACT(MONTH FROM as_of_date)*100 + EXTRACT(DAY FROM as_of_date)
+        ,1,0)
 )
 ;
